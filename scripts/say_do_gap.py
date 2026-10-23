@@ -1,11 +1,12 @@
-"""Compute the say-do gap per country and sex from the cleaned sample.
+"""Compute the say-do gap and the perception gap from the cleaned sample.
 
 Usage (after scripts/build_sample.py has made data/processed/sample.csv):
     python scripts/say_do_gap.py
 
 Writes:
     results/say_do_by_country.json   aggregate only (safe to commit)
-Prints the men's and women's rankings so you can check them by eye.
+    results/perception_gap.json      aggregate only (safe to commit)
+Prints the rankings and a perception-gap summary so you can check them by eye.
 """
 
 import json
@@ -15,10 +16,14 @@ from pathlib import Path
 
 import pandas as pd
 
-from harvest_hunt.gap import MIN_GROUP, say_do_by_country
+from harvest_hunt.gap import MIN_GROUP, perception_gap, say_do_by_country
 
-SAMPLE = Path("data/processed/sample.csv")
-OUT = Path("results/say_do_by_country.json")
+# Paths are relative to the repo root, so the script works from any folder
+# (including VS Code's Run button, which may start in another directory).
+ROOT = Path(__file__).resolve().parents[1]
+SAMPLE = ROOT / "data" / "processed" / "sample.csv"
+OUT = ROOT / "results" / "say_do_by_country.json"
+OUT_PERCEPTION = ROOT / "results" / "perception_gap.json"
 
 
 def to_records(table: pd.DataFrame) -> list[dict]:
@@ -43,7 +48,8 @@ def to_records(table: pd.DataFrame) -> list[dict]:
 
 def main() -> None:
     if not SAMPLE.exists():
-        sys.exit(f"{SAMPLE} not found. Run scripts/build_sample.py first.")
+        sys.exit(f"{SAMPLE} not found. Run scripts/build_sample.py <path to .dta> "
+                 "from the repo root first.")
     sample = pd.read_csv(SAMPLE)
     table = say_do_by_country(sample)
 
@@ -67,6 +73,35 @@ def main() -> None:
         print(f"\n=== {sex.upper()} (share %, 95% CI) ===")
         print(show[show["sex"] == sex][cols].to_string(index=False))
     print(f"\nSaved {OUT}")
+
+    perc = perception_gap(sample)
+    rounded = perc.copy()
+    num = rounded.select_dtypes("float").columns
+    rounded[num] = rounded[num].round(4)
+    OUT_PERCEPTION.write_text(json.dumps({
+        "description": "Per country and task, weighted share of partnered respondents saying "
+                       "the woman does the task (third-person tasks excluded), reported by men "
+                       "vs by women. gap = women's share - men's share; 95% CI by Newcombe's "
+                       "method from Wilson intervals on Kish effective n. Different households: "
+                       "a country-level comparison of reports, not within-couple disagreement.",
+        "data": "ISSP 2022 ZA10000 v2.0.0",
+        "computed": date.today().isoformat(),
+        "min_group": MIN_GROUP,
+        "rows": json.loads(rounded.to_json(orient="records")),
+    }, indent=2))
+
+    by_task = (perc.groupby("task")[["men_say_woman", "women_say_woman", "gap"]]
+                   .mean().mul(100).round(1).sort_values("gap", ascending=False))
+    print("\n=== PERCEPTION GAP: average over countries, % saying the woman does it ===")
+    print(by_task.to_string())
+    by_country = (perc.groupby("country")
+                      .agg(gap=("gap", "mean"),
+                           tasks_gap_clear=("gap_ci_low", lambda s: int((s > 0).sum())))
+                      .assign(gap=lambda t: (t["gap"] * 100).round(1))
+                      .sort_values("gap", ascending=False))
+    print("\n=== PERCEPTION GAP by country (mean gap in points; tasks where CI > 0, of 6) ===")
+    print(by_country.to_string())
+    print(f"\nSaved {OUT_PERCEPTION}")
 
 
 if __name__ == "__main__":

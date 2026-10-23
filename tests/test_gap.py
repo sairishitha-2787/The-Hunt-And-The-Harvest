@@ -73,3 +73,50 @@ def test_majority_flags(sample):
     assert bool(aa_men["clear_majority"])
     dd_men = row(out, "DD", "man")       # 0.55, n = 60: CI (0.42, 0.67) dips below 0.5
     assert bool(dd_men["majority"]) and not bool(dd_men["clear_majority"])
+
+
+# --- perception gap ------------------------------------------------------------
+
+def reports(country, sex, task_answers):
+    return pd.DataFrame({"country": country, "sex": sex, "weight": 1.0,
+                         "task_laundry": pd.Series(task_answers, dtype="object")})
+
+
+def test_perception_gap_hand_checked():
+    sample = pd.concat([
+        # Men: 30 of 60 couple-done answers say the woman does it -> 0.5
+        reports("AA", "man", ["woman"] * 30 + ["equal"] * 20 + ["man"] * 10),
+        # Women: 48 of 60 -> 0.8; the 5 "third" answers are left out
+        reports("AA", "woman", ["woman"] * 48 + ["equal"] * 12 + ["third"] * 5),
+    ], ignore_index=True)
+    out = gap.perception_gap(sample, tasks=["task_laundry"])
+    r = out.iloc[0]
+    assert r["task"] == "laundry"
+    assert r["men_say_woman"] == pytest.approx(0.5)
+    assert r["women_say_woman"] == pytest.approx(0.8)
+    assert r["women_n"] == 60
+    assert r["gap"] == pytest.approx(0.3)
+    assert r["gap_ci_low"] < 0.3 < r["gap_ci_high"]
+    assert r["gap_ci_low"] > 0  # a 30-point gap on 60 + 60 is clearly not zero
+    assert bool(r["small_group"]) is False
+
+
+def test_perception_gap_flags_small_groups():
+    sample = pd.concat([
+        reports("AA", "man", ["woman"] * 10 + ["equal"] * 10),   # only 20
+        reports("AA", "woman", ["woman"] * 40 + ["equal"] * 20),
+    ], ignore_index=True)
+    out = gap.perception_gap(sample, tasks=["task_laundry"])
+    assert bool(out.iloc[0]["small_group"]) is True
+
+
+def test_newcombe_matches_published_example():
+    # Newcombe (1998), example (a): 56/70 vs 48/80 -> difference 0.2000,
+    # 95% CI 0.0524 to 0.3339 (method 10).
+    from harvest_hunt.stats import wilson_interval
+    p1, p2 = 56 / 70, 48 / 80
+    l1, h1 = wilson_interval(p1, 70)
+    l2, h2 = wilson_interval(p2, 80)
+    low, high = gap.newcombe_difference(p1, l1, h1, p2, l2, h2)
+    assert low == pytest.approx(0.0524, abs=1e-4)
+    assert high == pytest.approx(0.3339, abs=1e-4)
