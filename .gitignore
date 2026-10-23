@@ -1,0 +1,12 @@
+# ISSP microdata: GESIS terms of use don't allow redistribution. Never commit it.
+data/
+*.dta
+*.sav
+*.zip
+
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.venv/
+.ipynb_checkpoints/
+.env
