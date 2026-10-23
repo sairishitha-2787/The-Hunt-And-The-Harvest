@@ -1,6 +1,8 @@
 # The Harvest and the Hunt
 
-*Harvest the work. Hunt the gap.*
+   [![tests](https://github.com/sairishitha-2787/The-Hunt-And-The-Harvest/actions/workflows/tests.yml/badge.svg)](https://github.com/sairishitha-2787/The-Hunt-And-The-Harvest/actions/workflows/tests.yml)
+
+   *Harvest the work. Hunt the gap.*
 
 The *harvest* is the everyday work of feeding and running a home, the labour this project measures. The *hunt* is tracking down the gap between what people say and what they do.
 
