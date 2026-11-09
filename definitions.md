@@ -69,7 +69,9 @@ For comparison, supporters by the main item (`v6`) range from 9% (Philippines) t
 
 The plan's working name was "say-only supporter." The data label is neutral because it describes the household, not the respondent's sincerity: a woman who rejects the gendered split but whose husband doesn't share the work is not saying one thing and doing another. Results are reported **separately for men and women**, and the say–do gap is led by men's answers.
 
-**Small groups:** where a country has fewer than **50** supporters of one sex, that sex's estimate is shown with its (wide) interval but is flagged and left out of rankings. This applies to Bulgaria, the Philippines, Hungary and Slovakia (smallest groups: 36, 38, 42 and 47).
+**Small groups:** where a country has fewer than **50** supporters of one sex, that sex's estimate is shown with its (wide) interval but is flagged and left out of rankings. This applies to six groups:
+- Men: Bulgaria (36), the Philippines (38), Hungary (42), Slovakia (47).
+- Women: the Philippines (40), Slovakia (47).
 
 ## Weights
 
@@ -101,3 +103,4 @@ The plan's working name was "say-only supporter." The data label is neutral beca
 ## Changelog
 
 - Oct 23, 2026: definitions fixed before analysis.
+- Nov 9, 2026: small-groups list completed with Philippine women (n=40) and Slovak women (n=47). The rule (fewer than 50 → flagged, not ranked) is unchanged; the list had named only the men's groups.

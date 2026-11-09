@@ -16,6 +16,12 @@ import pandas as pd
 from harvest_hunt import config as C
 from harvest_hunt.clean import build_sample, sample_flow
 
+# Paths are relative to the repo root, so the script works from any folder
+# (including VS Code's Run button, which may start in another directory).
+ROOT = Path(__file__).resolve().parents[1]
+PROCESSED = ROOT / "data" / "processed"
+RESULTS = ROOT / "results"
+
 
 def main(path: str) -> None:
     cols = ([C.COUNTRY, C.SEX, C.PARTNERED, C.WEIGHT, C.SUPPORTER_ITEM,
@@ -25,10 +31,10 @@ def main(path: str) -> None:
     sample = build_sample(raw)
     flow = sample_flow(raw, sample)
 
-    Path("data/processed").mkdir(parents=True, exist_ok=True)
-    Path("results").mkdir(exist_ok=True)
-    sample.to_csv("data/processed/sample.csv", index=False)
-    flow.to_csv("results/sample_flow.csv")
+    PROCESSED.mkdir(parents=True, exist_ok=True)
+    RESULTS.mkdir(exist_ok=True)
+    sample.to_csv(PROCESSED / "sample.csv", index=False)
+    flow.to_csv(RESULTS / "sample_flow.csv")
     print(flow.to_string())
 
 
