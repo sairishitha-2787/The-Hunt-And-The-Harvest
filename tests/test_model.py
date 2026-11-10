@@ -369,3 +369,43 @@ def test_logit_contributions_are_centred_linear_terms():
     expected = lp - np.average(lp, weights=data["weight"])
     np.testing.assert_allclose(contrib.sum(axis=1), expected, atol=1e-10)
     assert set(contrib.columns) == set(model.FEATURES)
+
+
+# --- Exploratory: couple's paid hours (added after 3b) --------------------------------
+
+def test_couple_paid_hours_from_the_womans_side():
+    t = pd.DataFrame({
+        # man 40 / partner 40 -> woman 0.5; man 40 / partner 10 -> woman 0.2;
+        # woman 10 / partner 40 -> 0.2; woman 40 / partner 10 -> 0.8;
+        # both 0 -> neither; woman 0 / partner 40 -> 0.0; missing -> NaN
+        "woman": [0, 0, 1, 1, 1, 1, 0],
+        "work_hours": [40, 40, 10, 40, 0, 0, np.nan],
+        "partner_work_hours": [40, 10, 40, 10, 0, 40, 20],
+    }, dtype=float)
+    out = model.couple_paid_hours(t)
+    assert out.tolist()[:6] == ["equal", "man_more", "man_more", "woman_more",
+                                "neither", "man_more"]
+    assert pd.isna(out.iloc[6])
+
+
+def test_couple_paid_hours_cutoffs_are_inclusive_for_equal():
+    # Woman's share exactly 0.4 and 0.6 -> equal; 0.45/0.55 cut-offs -> not.
+    t = pd.DataFrame({"woman": [1.0, 1.0], "work_hours": [40.0, 60.0],
+                      "partner_work_hours": [60.0, 40.0]})
+    assert model.couple_paid_hours(t).tolist() == ["equal", "equal"]
+    assert model.couple_paid_hours(t, (0.45, 0.55)).tolist() == ["man_more", "woman_more"]
+
+
+def test_couple_design_has_equal_as_reference():
+    X = model.design_matrix(model.impute_once(big_table(), 0), hours="couple")
+    couple = [c for c in X.columns if c.startswith("couple_")]
+    assert couple == ["couple_man_more", "couple_woman_more", "couple_neither"]
+    assert "work_hours_10" not in X.columns and "partner_work_hours_10" not in X.columns
+    assert {"in_work", "partner_in_work"} <= set(X.columns)
+
+
+def test_couple_design_without_work_status():
+    X = model.design_matrix(model.impute_once(big_table(), 0), hours="couple",
+                            work_status=False)
+    assert not {"in_work", "partner_in_work"} & set(X.columns)
+    assert "couple_neither" in X.columns

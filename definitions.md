@@ -105,6 +105,25 @@ The plan's working name was "say-only supporter." The data label is neutral beca
 
 **Robustness:** the MI model is refitted once with the respondent's share of the couple's paid-work hours (own / (own + partner); 0.5 if both are 0) in place of the two absolute hour variables (`results/logit_odds_ratios_hours_share.csv`).
 
+## Exploratory (added after 3b, not pre-registered)
+
+*Written Nov 10, 2026, before fitting. Prompted by the Session 3b SHAP result: own and partner paid hours pointed in opposite directions for men and women, so the own/partner coding cancelled them out. Every result below is exploratory and must be labelled so.*
+
+**Couple's paid hours** (replaces own and partner paid hours in the logistic model). From the **woman's share of the couple's weekly paid-work hours**: the woman's hours (the respondent's own if a woman, the partner's if a man) divided by both together, using `WRKHRS` and `SPWRKHRS` with 0 for anyone not in paid work.
+
+| Level | Rule |
+|---|---|
+| **Roughly equal** (reference) | 0.4 ≤ woman's share ≤ 0.6 |
+| Man works more | woman's share < 0.4 (includes a man as sole earner) |
+| Woman works more | woman's share > 0.6 (includes a woman as sole earner) |
+| Neither works for pay | both have 0 paid hours |
+
+- **Sensitivity:** the same with cut-offs 0.45 and 0.55.
+- Built after imputation, from the imputed hours, in each of the 20 imputed datasets.
+- Other features: sex, age, education, any child at home, effect-coded country.
+- **Own and partner work status are left out of the main version** (decided Nov 10, 2026, after the first fit). The couple's-hours variable already carries them: "neither works for pay" is exactly both work statuses at 0, and the other levels mix them. With them in, "neither" was unstable. Its CI (0.59–1.10) was much wider than the other levels', and it changed direction between cut-offs (0.81 → 1.09) although its members are the same in both. The version with work status is kept for comparison (columns ending `_ws`).
+- Results: `results/logit_odds_ratios_couple_hours.csv`.
+
 ## Limitations of the model
 
 - **Denmark's paid hours are mostly imputed.** 515 of 822 Danish supporters have no answer on their own paid-work hours. Under complete-case Denmark loses 69% of its rows; under MI its hours come largely from the imputation model, so Denmark's estimates lean on that model more than any other country's.
@@ -125,3 +144,5 @@ The plan's working name was "say-only supporter." The data label is neutral beca
 - Nov 9, 2026: complete-case would drop 21.3% of supporters (14.3% after the two fixes above), so model features are multiply imputed, with complete-case as a sensitivity check.
 - Nov 9, 2026: countries effect-coded (vs the average country) instead of dummy-coded against Austria, which lost 44% of its rows under complete-case and so distorted every country comparison there.
 - Nov 9, 2026: small-groups list completed with Philippine women (n=40) and Slovak women (n=47). The rule (fewer than 50 → flagged, not ranked) is unchanged; the list had named only the men's groups.
+- Nov 10, 2026: exploratory "couple's paid hours" variable defined (cut-offs 0.4/0.6, sensitivity 0.45/0.55) before fitting; see "Exploratory". Not pre-registered.
+- Nov 10, 2026: exploratory couple's-hours model: own and partner work status dropped from the main version, because "neither works for pay" was unstable with them in (see "Exploratory"). The version with them is reported alongside.

@@ -169,6 +169,28 @@ def own_paid_share(work_hours: pd.Series, partner_work_hours: pd.Series) -> pd.S
     return (work_hours / total.replace(0, np.nan)).where(total.ne(0), 0.5)
 
 
+COUPLE_CUTOFFS = (0.4, 0.6)  # exploratory, added after 3b (definitions.md)
+COUPLE_LEVELS = ["equal", "man_more", "woman_more", "neither"]  # first = reference
+
+
+def couple_paid_hours(table: pd.DataFrame, cutoffs=COUPLE_CUTOFFS) -> pd.Series:
+    """Who does more of the couple's paid work, from the woman's share of the hours.
+
+    man_more: share < low; equal: low <= share <= high; woman_more: share > high;
+    neither: both have 0 paid hours. NaN if either hours value is missing.
+    """
+    low, high = cutoffs
+    woman_hours = table["work_hours"].where(table["woman"].eq(1), table["partner_work_hours"])
+    total = table["work_hours"] + table["partner_work_hours"]
+    share = woman_hours / total.replace(0, np.nan)
+    out = pd.Series(np.nan, index=table.index, dtype="object")
+    out[share.between(low, high)] = "equal"
+    out[share.lt(low)] = "man_more"
+    out[share.gt(high)] = "woman_more"
+    out[total.eq(0)] = "neither"
+    return out
+
+
 def country_effects(country: pd.Series, levels=None) -> pd.DataFrame:
     """Sum-to-zero (effect) coding: one column per country except the last.
 
@@ -185,7 +207,8 @@ def country_effects(country: pd.Series, levels=None) -> pd.DataFrame:
     return X
 
 
-def design_matrix(table: pd.DataFrame, hours: str = "absolute", levels=None) -> pd.DataFrame:
+def design_matrix(table: pd.DataFrame, hours: str = "absolute", levels=None,
+                  cutoffs=COUPLE_CUTOFFS, work_status: bool = True) -> pd.DataFrame:
     """Model columns. Reference: a man with education up to lower secondary.
 
     Countries are effect-coded, so the constant is the average country.
@@ -193,6 +216,9 @@ def design_matrix(table: pd.DataFrame, hours: str = "absolute", levels=None) -> 
     describe a meaningful step rather than one year or one hour.
     hours="share" replaces the two hour variables with the respondent's share
     of the couple's paid hours, per 10 percentage points (robustness check).
+    hours="couple" replaces them with couple_paid_hours() dummies, reference
+    "roughly equal" (exploratory, added after 3b). work_status=False drops
+    own and partner work status, which "couple" largely repeats.
     """
     educ = table["educ"]
     X = pd.DataFrame({
@@ -211,19 +237,26 @@ def design_matrix(table: pd.DataFrame, hours: str = "absolute", levels=None) -> 
     elif hours == "share":
         X["own_paid_share_10pp"] = own_paid_share(table["work_hours"],
                                                   table["partner_work_hours"]) * 10
+    elif hours == "couple":
+        couple = couple_paid_hours(table, cutoffs)
+        for level in COUPLE_LEVELS[1:]:
+            X[f"couple_{level}"] = couple.eq(level).astype(float).where(couple.notna())
     else:
-        raise ValueError(f"hours must be 'absolute' or 'share', not {hours!r}")
+        raise ValueError(f"hours must be 'absolute', 'share' or 'couple', not {hours!r}")
+    if not work_status:
+        X = X.drop(columns=["in_work", "partner_in_work"])
     return pd.concat([X.astype(float), country_effects(table["country"], levels)], axis=1)
 
 
-def fit_logit(table: pd.DataFrame, hours: str = "absolute", levels=None):
+def fit_logit(table: pd.DataFrame, hours: str = "absolute", levels=None,
+              cutoffs=COUPLE_CUTOFFS, work_status: bool = True):
     """Weighted logistic GLM with HC0 robust standard errors.
 
     Weights enter as var_weights: with HC0 this gives the usual survey
     ("pweight") sandwich. freq_weights would treat each weight as that many
     copies of the person and make the intervals too narrow.
     """
-    X = design_matrix(table, hours, levels)
+    X = design_matrix(table, hours, levels, cutoffs, work_status)
     return sm.GLM(table[OUTCOME].astype(float), X, family=sm.families.Binomial(),
                   var_weights=table["weight"]).fit(cov_type="HC0")
 
@@ -273,11 +306,13 @@ def pool_rubin(estimates: pd.DataFrame, variances: pd.DataFrame,
 
 
 def fit_mi(table: pd.DataFrame, m: int = 20, seed: int = 0,
-           hours: str = "absolute") -> pd.DataFrame:
+           hours: str = "absolute", cutoffs=COUPLE_CUTOFFS,
+           work_status: bool = True) -> pd.DataFrame:
     """Impute m times (random_state seed, seed+1, ...), fit each, pool with Rubin's rules."""
     estimates, variances = [], []
     for i in range(m):
-        res = fit_logit(impute_once(table, random_state=seed + i), hours)
+        res = fit_logit(impute_once(table, random_state=seed + i), hours,
+                        cutoffs=cutoffs, work_status=work_status)
         est, var = coefficients(res, table["country"])
         estimates.append(est)
         variances.append(var)
