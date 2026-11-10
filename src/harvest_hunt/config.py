@@ -1,6 +1,6 @@
 """Variable names and codes for ISSP 2022 (ZA10000, v2.0.0).
 
-Confirmed against the data file and ZA10000_v2-0-0_missing.txt on Oct 23, 2026.
+Confirmed against the data file and data/raw/ZA10000_v2-0-0_missing.txt on Oct 23, 2026.
 See variables.md for the full variable list.
 """
 

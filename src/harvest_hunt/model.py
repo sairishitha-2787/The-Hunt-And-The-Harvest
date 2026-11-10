@@ -12,14 +12,21 @@ which is the respondent's verdict on that same division of work.
 The model is a weighted logistic regression with country fixed effects and
 robust (sandwich) standard errors, fitted on m multiply imputed datasets and
 pooled with Rubin's rules, plus a complete-case fit as a sensitivity check.
+
+Session 3b compares it out of sample with gradient boosting (same features,
+same weights, same folds), checks calibration, and explains the boosting
+model with SHAP values.
 """
 
 import numpy as np
 import pandas as pd
 import statsmodels.api as sm
 from scipy import stats as sps
+from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.experimental import enable_iterative_imputer  # noqa: F401
 from sklearn.impute import IterativeImputer
+from sklearn.metrics import brier_score_loss, roc_auc_score
+from sklearn.model_selection import StratifiedKFold
 
 from harvest_hunt import config as C
 
@@ -88,23 +95,31 @@ def missingness(table: pd.DataFrame, features=FEATURES) -> pd.DataFrame:
 
 # --- Imputation ----------------------------------------------------------------------
 
-def impute_once(table: pd.DataFrame, random_state: int) -> pd.DataFrame:
-    """One imputed copy of the table (IterativeImputer, draws from the posterior).
+NUMERIC_FEATURES = [f for f in FEATURES if f != "country"]
 
-    The imputation model sees the outcome, sex, country dummies and every other
-    feature, but not the weights. Imputed values are then made valid: binary
-    features rounded to 0/1, counts and hours rounded and kept in range, and
-    paid hours forced to 0 for anyone imputed as not in paid work (and at least
-    1 for anyone in it).
+
+def _imputation_matrix(table: pd.DataFrame, columns, levels=None) -> pd.DataFrame:
+    """Numeric columns plus country dummies (first level dropped), for the imputer.
+
+    Passing `levels` fixes the dummy columns, so a training fold and a test
+    fold get the same columns even if a country is missing from one of them.
     """
-    numeric = [OUTCOME] + [f for f in FEATURES if f != "country"]
-    countries = pd.get_dummies(table["country"], prefix="c", drop_first=True, dtype=float)
-    X = pd.concat([table[numeric].astype(float), countries], axis=1)
-    imputer = IterativeImputer(sample_posterior=True, random_state=random_state, max_iter=10)
-    filled = pd.DataFrame(imputer.fit_transform(X), index=X.index, columns=X.columns)
+    levels = sorted(table["country"].unique()) if levels is None else levels
+    country = pd.Categorical(table["country"], categories=levels)
+    countries = pd.get_dummies(country, prefix="c", drop_first=True, dtype=float)
+    countries.index = table.index
+    return pd.concat([table[columns].astype(float), countries], axis=1)
 
+
+def _fill(table: pd.DataFrame, filled: pd.DataFrame, columns) -> pd.DataFrame:
+    """Put imputed values into the missing cells only, then make them valid.
+
+    Binary features are rounded to 0/1, counts and hours rounded and kept in
+    range, and paid hours forced to 0 for anyone imputed as not in paid work
+    (and at least 1 for anyone in it).
+    """
     out = table.copy()
-    for col in numeric:
+    for col in columns:
         out[col] = out[col].where(out[col].notna(), filled[col])
     for col in BINARY:
         out[col] = out[col].clip(0, 1).round()
@@ -116,6 +131,36 @@ def impute_once(table: pd.DataFrame, random_state: int) -> pd.DataFrame:
     return out
 
 
+def impute_once(table: pd.DataFrame, random_state: int) -> pd.DataFrame:
+    """One imputed copy of the table (IterativeImputer, draws from the posterior).
+
+    For inference (MI): the imputation model sees the outcome, sex, country
+    dummies and every other feature, but not the weights.
+    """
+    columns = [OUTCOME] + NUMERIC_FEATURES
+    X = _imputation_matrix(table, columns)
+    imputer = IterativeImputer(sample_posterior=True, random_state=random_state, max_iter=10)
+    filled = pd.DataFrame(imputer.fit_transform(X), index=X.index, columns=X.columns)
+    return _fill(table, filled, columns)
+
+
+def impute_train_test(train: pd.DataFrame, test: pd.DataFrame, levels,
+                      random_state: int = 0) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """For prediction: fit one imputation on the training rows, apply it to both.
+
+    The outcome is left out of this imputation model: it is unknown for the
+    rows being predicted, so using it would leak the answer into the features.
+    """
+    imputer = IterativeImputer(random_state=random_state, max_iter=10)
+    imputer.fit(_imputation_matrix(train, NUMERIC_FEATURES, levels))
+
+    def apply(t):
+        X = _imputation_matrix(t, NUMERIC_FEATURES, levels)
+        filled = pd.DataFrame(imputer.transform(X), index=X.index, columns=X.columns)
+        return _fill(t, filled, NUMERIC_FEATURES)
+    return apply(train), apply(test)
+
+
 # --- Model ---------------------------------------------------------------------------
 
 def own_paid_share(work_hours: pd.Series, partner_work_hours: pd.Series) -> pd.Series:
@@ -124,22 +169,23 @@ def own_paid_share(work_hours: pd.Series, partner_work_hours: pd.Series) -> pd.S
     return (work_hours / total.replace(0, np.nan)).where(total.ne(0), 0.5)
 
 
-def country_effects(country: pd.Series) -> pd.DataFrame:
+def country_effects(country: pd.Series, levels=None) -> pd.DataFrame:
     """Sum-to-zero (effect) coding: one column per country except the last.
 
     A row from country c has 1 in column c; a row from the last country has -1
     in every column. Each coefficient is then that country's difference from
     the unweighted average of all country effects. The last country's effect
-    is minus the sum of the others (see coefficients()).
+    is minus the sum of the others (see coefficients()). Pass `levels` to fix
+    the columns (e.g. the same countries in every cross-validation fold).
     """
-    levels = sorted(country.unique())
+    levels = sorted(country.unique()) if levels is None else levels
     X = pd.DataFrame({f"country_{c}": country.eq(c).astype(float) for c in levels[:-1]},
                      index=country.index)
     X.loc[country.eq(levels[-1])] = -1.0
     return X
 
 
-def design_matrix(table: pd.DataFrame, hours: str = "absolute") -> pd.DataFrame:
+def design_matrix(table: pd.DataFrame, hours: str = "absolute", levels=None) -> pd.DataFrame:
     """Model columns. Reference: a man with education up to lower secondary.
 
     Countries are effect-coded, so the constant is the average country.
@@ -167,17 +213,17 @@ def design_matrix(table: pd.DataFrame, hours: str = "absolute") -> pd.DataFrame:
                                                   table["partner_work_hours"]) * 10
     else:
         raise ValueError(f"hours must be 'absolute' or 'share', not {hours!r}")
-    return pd.concat([X.astype(float), country_effects(table["country"])], axis=1)
+    return pd.concat([X.astype(float), country_effects(table["country"], levels)], axis=1)
 
 
-def fit_logit(table: pd.DataFrame, hours: str = "absolute"):
+def fit_logit(table: pd.DataFrame, hours: str = "absolute", levels=None):
     """Weighted logistic GLM with HC0 robust standard errors.
 
     Weights enter as var_weights: with HC0 this gives the usual survey
     ("pweight") sandwich. freq_weights would treat each weight as that many
     copies of the person and make the intervals too narrow.
     """
-    X = design_matrix(table, hours)
+    X = design_matrix(table, hours, levels)
     return sm.GLM(table[OUTCOME].astype(float), X, family=sm.families.Binomial(),
                   var_weights=table["weight"]).fit(cov_type="HC0")
 
@@ -267,3 +313,196 @@ def odds_ratio_table(mi: pd.DataFrame, cc: pd.DataFrame | None = None) -> pd.Dat
     out = pd.concat([out[~is_country], out[is_country]])
     out.index.name = "term"
     return out
+
+
+# --- Prediction: logistic vs gradient boosting (Session 3b) --------------------------
+
+CV_SEED = 2026
+BOOST_PARAMS = {  # modest fixed settings, no grid search
+    "learning_rate": 0.05, "max_iter": 500, "max_leaf_nodes": 15,
+    "min_samples_leaf": 50, "l2_regularization": 1.0,
+    "early_stopping": True, "validation_fraction": 0.1, "n_iter_no_change": 20,
+}
+
+
+def cv_folds(y: pd.Series, k: int = 5, seed: int = CV_SEED) -> pd.Series:
+    """Fold number (0 to k-1) for every row, stratified on the outcome.
+
+    Computed once and shared by every model, so all models see identical folds.
+    """
+    folds = pd.Series(-1, index=y.index)
+    splitter = StratifiedKFold(n_splits=k, shuffle=True, random_state=seed)
+    for i, (_, test) in enumerate(splitter.split(np.zeros(len(y)), y)):
+        folds.iloc[test] = i
+    return folds
+
+
+def predict_logit(train: pd.DataFrame, test: pd.DataFrame, levels, seed: int = CV_SEED):
+    """Logistic model: impute from the training fold only, fit, predict the test fold."""
+    train, test = impute_train_test(train, test, levels, random_state=seed)
+    res = fit_logit(train, levels=levels)
+    return np.asarray(res.predict(design_matrix(test, levels=levels)))
+
+
+def boost_matrix(table: pd.DataFrame, levels, one_hot: bool = False) -> pd.DataFrame:
+    """Boosting features: as in the logistic model, missing values left in.
+
+    Country is an integer code (native categorical) or, with one_hot, one 0/1
+    column per country. SHAP's TreeExplainer is exact only for the one-hot
+    version: it misreads scikit-learn's categorical splits.
+    """
+    X = table[NUMERIC_FEATURES].astype(float).copy()
+    country = pd.Categorical(table["country"], categories=levels)
+    if one_hot:
+        dummies = pd.get_dummies(country, prefix="country", dtype=float)
+        dummies.index = X.index
+        return pd.concat([X, dummies], axis=1)
+    X["country"] = country.codes.astype(float)
+    return X
+
+
+def fit_boost(train: pd.DataFrame, levels, seed: int = CV_SEED, one_hot: bool = False):
+    """HistGradientBoostingClassifier with survey weights and early stopping.
+
+    Native mode treats country and education as categorical; one-hot mode
+    (for SHAP) keeps education as an ordered number.
+    """
+    X = boost_matrix(train, levels, one_hot)
+    categorical = None if one_hot else ["country", "educ"]
+    model = HistGradientBoostingClassifier(categorical_features=categorical,
+                                           random_state=seed, **BOOST_PARAMS)
+    return model.fit(X, train[OUTCOME], sample_weight=train["weight"])
+
+
+def predict_boost(train, test, levels, seed: int = CV_SEED, one_hot: bool = False):
+    model = fit_boost(train, levels, seed, one_hot)
+    return model.predict_proba(boost_matrix(test, levels, one_hot))[:, 1]
+
+
+def predict_boost_onehot(train, test, levels, seed: int = CV_SEED):
+    return predict_boost(train, test, levels, seed, one_hot=True)
+
+
+MODELS = {
+    "logistic": predict_logit,
+    "boosting": predict_boost,
+    "boosting_onehot": predict_boost_onehot,  # the variant SHAP explains
+}
+
+
+def cross_validate(table: pd.DataFrame, k: int = 5, seed: int = CV_SEED,
+                   models=None) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Out-of-fold predictions and per-fold weighted AUC and Brier score.
+
+    Folds are computed once, so every model is trained and tested on exactly
+    the same rows. Returns (oof: one row per respondent, metrics: one row per
+    model and fold).
+    """
+    models = MODELS if models is None else models
+    levels = sorted(table["country"].unique())
+    folds = cv_folds(table[OUTCOME], k, seed)
+    oof = pd.DataFrame({"fold": folds, OUTCOME: table[OUTCOME],
+                        "weight": table["weight"]}, index=table.index)
+    rows = []
+    for fold in range(k):
+        train, test = table[folds != fold], table[folds == fold]
+        for name, predict in models.items():
+            p = predict(train, test, levels, seed)
+            oof.loc[test.index, name] = p
+            y, w = test[OUTCOME], test["weight"]
+            rows.append({"model": name, "fold": fold, "n": len(test),
+                         "auc": roc_auc_score(y, p, sample_weight=w),
+                         "brier": brier_score_loss(y, p, sample_weight=w)})
+    return oof, pd.DataFrame(rows)
+
+
+def summarise_cv(metrics: pd.DataFrame) -> pd.DataFrame:
+    """Mean and SD across folds per model."""
+    return metrics.groupby("model")[["auc", "brier"]].agg(["mean", "std"])
+
+
+# --- Calibration ---------------------------------------------------------------------
+
+def calibration_slope_intercept(y, p, w) -> dict:
+    """Weighted calibration slope and calibration-in-the-large.
+
+    slope: coefficient on logit(p) in a logistic regression of y on logit(p);
+    1 is ideal, below 1 means predictions are too extreme.
+    intercept: constant with logit(p) as a fixed offset (slope held at 1);
+    0 is ideal, above 0 means predictions are too low on average.
+    """
+    p = np.clip(np.asarray(p, dtype=float), 1e-6, 1 - 1e-6)
+    lp = np.log(p / (1 - p))
+    y = np.asarray(y, dtype=float)
+    fam = sm.families.Binomial()
+    slope = sm.GLM(y, sm.add_constant(lp), family=fam, var_weights=w).fit().params[1]
+    intercept = sm.GLM(y, np.ones_like(lp), family=fam, offset=lp,
+                       var_weights=w).fit().params[0]
+    return {"slope": float(slope), "intercept": float(intercept)}
+
+
+def reliability_curve(y, p, w, bins: int = 10) -> pd.DataFrame:
+    """Weighted mean prediction vs weighted observed rate in `bins` equal-count bins."""
+    d = pd.DataFrame({"y": np.asarray(y, float), "p": np.asarray(p, float),
+                      "w": np.asarray(w, float)})
+    d["bin"] = pd.qcut(d["p"].rank(method="first"), bins, labels=False)
+    rows = []
+    for _, b in d.groupby("bin"):
+        rows.append({"predicted": np.average(b["p"], weights=b["w"]),
+                     "observed": np.average(b["y"], weights=b["w"]), "n": len(b)})
+    return pd.DataFrame(rows)
+
+
+# --- SHAP ----------------------------------------------------------------------------
+
+def feature_of(column: str) -> str:
+    """Model column -> the feature it belongs to (countries and education grouped)."""
+    if column.startswith("country"):
+        return "country"
+    if column.startswith("educ"):
+        return "educ"
+    return {"age_10y": "age", "work_hours_10": "work_hours",
+            "partner_work_hours_10": "partner_work_hours"}.get(column, column)
+
+
+def group_columns(values: pd.DataFrame) -> pd.DataFrame:
+    """Sum per-row contributions of columns that belong to one feature."""
+    return values.T.groupby(values.columns.map(feature_of)).sum().T
+
+
+def weighted_mean_abs(values: pd.DataFrame, weights: pd.Series) -> pd.Series:
+    """Survey-weighted mean |contribution| per column, largest first."""
+    w = np.asarray(weights, float)
+    return (values.abs().mul(w, axis=0).sum() / w.sum()).sort_values(ascending=False)
+
+
+def boost_shap(table: pd.DataFrame, seed: int = CV_SEED) -> pd.DataFrame:
+    """SHAP values (log-odds) from the one-hot boosting model fitted on all rows.
+
+    Countries are summed into one "country" column. TreeExplainer's values add
+    up exactly to the model's log-odds; this is checked before returning.
+    """
+    import shap
+
+    levels = sorted(table["country"].unique())
+    model = fit_boost(table, levels, seed, one_hot=True)
+    X = boost_matrix(table, levels, one_hot=True)
+    explainer = shap.TreeExplainer(model)
+    values = pd.DataFrame(explainer.shap_values(X), index=X.index, columns=X.columns)
+    gap = values.sum(axis=1) + explainer.expected_value - model.decision_function(X)
+    if np.abs(gap).max() > 1e-6:
+        raise RuntimeError("SHAP values do not add up to the model output.")
+    return group_columns(values)
+
+
+def logit_contributions(table: pd.DataFrame, seed: int = 0) -> pd.DataFrame:
+    """The logistic model's own per-row contributions, b * (x - weighted mean of x).
+
+    For a linear model these are exactly its SHAP values, so they can be ranked
+    side by side with the boosting SHAP values. Fitted on one imputation.
+    """
+    data = impute_once(table, random_state=seed)
+    res = fit_logit(data)
+    X = design_matrix(data).drop(columns="const")
+    centred = X - np.average(X, axis=0, weights=data["weight"])
+    return group_columns(centred * res.params[X.columns])

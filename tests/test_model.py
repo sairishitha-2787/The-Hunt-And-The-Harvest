@@ -256,3 +256,116 @@ def test_odds_ratio_table_puts_countries_last():
     assert "const" not in ors.index
     assert (ors["ci_low_mi"] < ors["or_mi"]).all() and (ors["or_mi"] < ors["ci_high_mi"]).all()
     assert (ors["ci_low_cc"] < ors["or_cc"]).all() and (ors["or_cc"] < ors["ci_high_cc"]).all()
+
+
+# --- Session 3b: cross-validation, calibration, SHAP ----------------------------------
+
+def test_imputation_is_fitted_on_training_rows_only():
+    t = big_table()
+    levels = sorted(t["country"].unique())
+    train, test = t.iloc[:300].copy(), t.iloc[300:].copy()
+    target = test.index[test["age"].isna()][0]
+    others = test.index.drop(target)
+
+    _, before = model.impute_train_test(train, test, levels)
+    # Wildly change every other test row. An imputer fitted on training rows
+    # only cannot see this, so the target row's imputed age must not move.
+    shifted = test.copy()
+    shifted.loc[others, "age"] = shifted.loc[others, "age"] * 10 + 500
+    shifted.loc[others, "educ"] = 8
+    _, after = model.impute_train_test(train, shifted, levels)
+    assert after.loc[target, "age"] == before.loc[target, "age"]
+
+
+def test_leaky_imputation_would_be_caught():
+    # The deliberately leaky version (fitting on train + test) does move the
+    # imputed value, so the test above would fail if the code leaked.
+    t = big_table()
+    levels = sorted(t["country"].unique())
+    train, test = t.iloc[:300].copy(), t.iloc[300:].copy()
+    target = test.index[test["age"].isna()][0]
+    shifted = test.copy()
+    others = test.index.drop(target)
+    shifted.loc[others, "age"] = shifted.loc[others, "age"] * 10 + 500
+    _, honest = model.impute_train_test(pd.concat([train, test]), test, levels)
+    _, leaky = model.impute_train_test(pd.concat([train, shifted]), shifted, levels)
+    assert leaky.loc[target, "age"] != honest.loc[target, "age"]
+
+
+def test_folds_identical_across_models():
+    t = big_table()
+    seen = {}
+
+    def recorder(name):
+        def predict(train, test, levels, seed):
+            seen.setdefault(name, []).append((tuple(train.index), tuple(test.index)))
+            return np.full(len(test), 0.5)
+        return predict
+
+    oof, metrics = model.cross_validate(t, k=5, models={"a": recorder("a"), "b": recorder("b")})
+    assert seen["a"] == seen["b"]
+    assert len(seen["a"]) == 5
+    tested = [i for _, test in seen["a"] for i in test]
+    assert sorted(tested) == sorted(t.index)  # every row tested exactly once
+    for train, test in seen["a"]:
+        assert not set(train) & set(test)
+    assert oof["fold"].between(0, 4).all()
+
+
+def test_cv_folds_are_fixed_and_stratified():
+    y = pd.Series([0] * 60 + [1] * 40)
+    a, b = model.cv_folds(y, k=5, seed=1), model.cv_folds(y, k=5, seed=1)
+    assert a.equals(b)
+    assert (y.groupby(a).mean() == 0.4).all()
+
+
+def test_cross_validate_runs_both_real_models():
+    t = big_table()
+    oof, metrics = model.cross_validate(t, k=3, models={k: model.MODELS[k]
+                                                         for k in ["logistic", "boosting"]})
+    assert oof[["logistic", "boosting"]].notna().all().all()
+    assert oof[["logistic", "boosting"]].stack().between(0, 1).all()
+    assert len(metrics) == 6 and metrics["auc"].between(0, 1).all()
+
+
+def test_calibration_of_true_probabilities():
+    rng = np.random.default_rng(0)
+    p = rng.uniform(0.05, 0.95, 20000)
+    y = (rng.random(20000) < p).astype(int)
+    w = np.ones(20000)
+    good = model.calibration_slope_intercept(y, p, w)
+    assert good["slope"] == pytest.approx(1, abs=0.05)
+    assert good["intercept"] == pytest.approx(0, abs=0.05)
+    # Doubling the log-odds makes predictions too extreme: slope near 0.5.
+    lp = np.log(p / (1 - p))
+    extreme = model.calibration_slope_intercept(y, 1 / (1 + np.exp(-2 * lp)), w)
+    assert extreme["slope"] == pytest.approx(0.5, abs=0.05)
+
+
+def test_reliability_curve_hand_checked():
+    y = [0, 1, 1, 1]
+    p = [0.2, 0.4, 0.6, 0.8]
+    w = [1, 3, 1, 1]
+    curve = model.reliability_curve(y, p, w, bins=2)
+    # Bin 1: p 0.2 (w 1), 0.4 (w 3) -> predicted 0.35, observed 0.75
+    assert curve.loc[0, "predicted"] == pytest.approx(0.35)
+    assert curve.loc[0, "observed"] == pytest.approx(0.75)
+    assert curve.loc[1, "predicted"] == pytest.approx(0.7)
+
+
+def test_boost_shap_groups_countries_and_adds_up():
+    values = model.boost_shap(big_table())  # raises if SHAP doesn't add up
+    assert "country" in values.columns
+    assert not any(c.startswith("country_") for c in values.columns)
+    assert set(values.columns) == set(model.FEATURES)
+
+
+def test_logit_contributions_are_centred_linear_terms():
+    t = big_table()
+    contrib = model.logit_contributions(t)
+    data = model.impute_once(t, random_state=0)
+    res = model.fit_logit(data)
+    lp = model.design_matrix(data) @ res.params
+    expected = lp - np.average(lp, weights=data["weight"])
+    np.testing.assert_allclose(contrib.sum(axis=1), expected, atol=1e-10)
+    assert set(contrib.columns) == set(model.FEATURES)

@@ -1,4 +1,4 @@
-# Variables in /mnt/user-data/uploads/The-Hunt-&-The-Harvest/ZA10000_v2-0-0.dta/ZA10000_v2-0-0.dta
+# Variables in data/raw/ZA10000_v2-0-0.dta
 
 417 variables.
 
