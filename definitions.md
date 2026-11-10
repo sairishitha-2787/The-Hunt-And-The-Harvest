@@ -146,3 +146,4 @@ The plan's working name was "say-only supporter." The data label is neutral beca
 - Nov 9, 2026: small-groups list completed with Philippine women (n=40) and Slovak women (n=47). The rule (fewer than 50 → flagged, not ranked) is unchanged; the list had named only the men's groups.
 - Nov 10, 2026: exploratory "couple's paid hours" variable defined (cut-offs 0.4/0.6, sensitivity 0.45/0.55) before fitting; see "Exploratory". Not pre-registered.
 - Nov 10, 2026: exploratory couple's-hours model: own and partner work status dropped from the main version, because "neither works for pay" was unstable with them in (see "Exploratory"). The version with them is reported alongside.
+- Nov 10, 2026: hours-based check fixed as shared if the woman does 40–60% of the couple's housework hours (both ends inclusive). The band was set in the Session 3c instructions before any hours-based result was computed.
