@@ -35,10 +35,11 @@ HOURS_PARTNER = "v36"     # Q16a spouse/partner; 0-95
 #     the home and family." 1 strongly agree ... 5 strongly disagree. ---------------
 SUPPORTER_ITEM = "v6"
 SUPPORTER_CODES = [4, 5]  # disagree or strongly disagree
-# Sensitivity items (Session 3):
+# Sensitivity items (Session 3c): name -> (variable, supporter codes)
 #   v20 Q7a who should provide for the family financially: 3 = mother and father equally
 #   v10 Q3b woman's work when youngest child is at school: 1 full-time, 2 part-time, 3 stay home
-#       (code 4, "women should decide", exists only in Taiwan)
+#       (code 4, "women should decide", exists only in Taiwan: not a supporter)
+SUPPORTER_SENSITIVITY = {"v20": ("v20", [3]), "v10": ("v10", [1, 2])}
 
 # --- Carried through for modelling (Session 3) -----------------------------------------
 COVARIATES = {

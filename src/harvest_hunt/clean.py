@@ -127,7 +127,8 @@ def build_sample(raw: pd.DataFrame) -> pd.DataFrame:
     """Apply every step to the raw ISSP file, using the names in config."""
     task_cols = list(C.TASKS.values())
     numeric = (task_cols + list(C.COVARIATES.values())
-               + [C.SEX, C.PARTNERED, C.SUPPORTER_ITEM, C.HOURS_SELF, C.HOURS_PARTNER])
+               + [C.SEX, C.PARTNERED, C.SUPPORTER_ITEM, C.HOURS_SELF, C.HOURS_PARTNER]
+               + [var for var, _ in C.SUPPORTER_SENSITIVITY.values()])
     df = to_missing(raw, numeric, C.MISSING_CODES)
 
     df = df[df[C.PARTNERED].isin(C.PARTNERED_YES) & df[C.SEX].isin([C.MALE, C.FEMALE])]
@@ -145,6 +146,8 @@ def build_sample(raw: pd.DataFrame) -> pd.DataFrame:
     out["shared"] = shared_household(done_by)
     out["woman_hours_share"] = woman_hours_share(df[C.HOURS_SELF], df[C.HOURS_PARTNER], df[C.SEX])
     out["supporter"] = supporter(df[C.SUPPORTER_ITEM])
+    for name, (var, codes) in C.SUPPORTER_SENSITIVITY.items():
+        out[f"supporter_{name}"] = supporter(df[var], codes)
     out["group"] = classify(out["supporter"], out["shared"])
 
     for name, col in C.COVARIATES.items():

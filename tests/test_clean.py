@@ -103,6 +103,7 @@ def make_raw():
         "v42": [-9, -9, -4], "v43": [-9, -9, -4], "v44": [-9, -9, -4],
         "v34": [10, 25, 5], "v36": [10, -9, -4],
         "v6": [5, 4, 1],                        # first two disagree -> supporters
+        "v20": [3, 1, -8], "v10": [1, 3, 4],    # sensitivity supporter items
         "AGE": [40, 35, 60], "EDULEVEL": [6, 3, 1],
         "WORK": [1, 2, 1], "SPWORK": [1, 1, -4],
         "WRKHRS": [45, -4, 40], "SPWRKHRS": [30, 50, -4],

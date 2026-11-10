@@ -25,6 +25,7 @@ RESULTS = ROOT / "results"
 
 def main(path: str) -> None:
     cols = ([C.COUNTRY, C.SEX, C.PARTNERED, C.WEIGHT, C.SUPPORTER_ITEM,
+             *(var for var, _ in C.SUPPORTER_SENSITIVITY.values()),
              C.HOURS_SELF, C.HOURS_PARTNER]
             + list(C.TASKS.values()) + list(C.COVARIATES.values()))
     raw = pd.read_stata(path, columns=cols, convert_categoricals=False)

@@ -37,6 +37,8 @@ def synthetic_raw() -> pd.DataFrame:
     raw[C.PARTNERED] = [1, 1, 1, 1, 2, 1]
     raw[C.WEIGHT] = [1.0, 2.0, 1.0, 1.0, 1.0, 3.0]
     raw[C.SUPPORTER_ITEM] = [5, 4, 3, 4, 5, 4]
+    raw["v20"] = [3, 3, 3, 1, 3, 2]
+    raw["v10"] = [1, 2, 3, 1, 1, 4]
     raw[C.HOURS_SELF] = [10, 20, 10, 5, 10, 2]
     raw[C.HOURS_PARTNER] = [10, 2, 10, 5, 10, 20]
     cov = C.COVARIATES
