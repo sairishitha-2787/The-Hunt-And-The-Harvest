@@ -90,6 +90,24 @@ def zero_hours_if_not_working(hours: pd.Series, work: pd.Series) -> pd.Series:
     return hours.where(work.ne(2) & work.ne(3), 0.0)
 
 
+def any_child(kids_school: pd.Series, kids_under_school: pd.Series,
+              household_size: pd.Series, adults: pd.Series) -> pd.Series:
+    """1 if any child under 18 lives in the household, 0 if none, NaN if unknown.
+
+    The two children items decide when they can: either above 0 -> 1, both 0 -> 0.
+    Otherwise (NL never asked about children below school age; AU codes "no
+    children" as no answer) household size minus adults decides. A negative
+    difference is inconsistent and stays unknown.
+    """
+    result = pd.Series(np.nan, index=kids_school.index)
+    non_adults = household_size - adults
+    result[non_adults.eq(0)] = 0.0
+    result[non_adults.gt(0)] = 1.0
+    result[kids_school.eq(0) & kids_under_school.eq(0)] = 0.0
+    result[kids_school.gt(0) | kids_under_school.gt(0)] = 1.0
+    return result
+
+
 def normalise_weights(weight: pd.Series, country: pd.Series) -> pd.Series:
     """Scale weights so they average 1 within each country.
 
@@ -134,6 +152,8 @@ def build_sample(raw: pd.DataFrame) -> pd.DataFrame:
     out["work_hours"] = zero_hours_if_not_working(out["work_hours"], out["work"])
     out["partner_work_hours"] = zero_hours_if_not_working(out["partner_work_hours"],
                                                           out["partner_work"])
+    out["any_child"] = any_child(out["kids_school"], out["kids_under_school"],
+                                 out["household_size"], out["adults"])
     return out
 
 

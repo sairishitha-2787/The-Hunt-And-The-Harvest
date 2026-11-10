@@ -107,6 +107,7 @@ def make_raw():
         "WORK": [1, 2, 1], "SPWORK": [1, 1, -4],
         "WRKHRS": [45, -4, 40], "SPWRKHRS": [30, 50, -4],
         "HHCHILDR": [1, 0, 0], "HHTODD": [0, 0, 0], "v45": [3, 1, -4],
+        "HOMPOP": [3, 2, 2], "HHADULT": [2, 2, 2],
     })
 
 
@@ -127,3 +128,16 @@ def test_sample_flow_counts_each_step():
     flow = clean.sample_flow(raw, clean.build_sample(raw))
     assert flow.loc["IN"].tolist() == [3, 2, 1, 1, 1]
     assert flow.loc["TOTAL", "all_respondents"] == 3
+
+
+def test_any_child_from_items_then_household_size():
+    nan = np.nan
+    kids_school = pd.Series([1, 0, 0, nan, nan, nan, nan])
+    kids_under = pd.Series([nan, 0, 0, nan, nan, nan, 2])
+    hompop = pd.Series([2, 4, 2, 2, 3, nan, nan])
+    adults = pd.Series([2, 2, 2, 2, 2, 2, nan])
+    out = clean.any_child(kids_school, kids_under, hompop, adults)
+    # Items decide first (rows 0-2, 6), even against household size (row 1);
+    # otherwise household minus adults (rows 3-4); nothing usable -> NaN (row 5).
+    assert out.tolist()[:5] == [1, 0, 0, 0, 1]
+    assert np.isnan(out.iloc[5]) and out.iloc[6] == 1

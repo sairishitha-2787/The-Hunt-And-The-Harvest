@@ -50,6 +50,9 @@ COVARIATES = {
     "partner_work_hours": "SPWRKHRS",
     "kids_school": "HHCHILDR",     # children from school age to 17 in household
     "kids_under_school": "HHTODD", # children below school age in household
+                                   # NL: not asked (-1). AU: -9 = "no answer and no children"
+    "household_size": "HOMPOP",    # persons in household
+    "adults": "HHADULT",           # adults in household
     "fair_share": "v45",           # Q19 own share of housework: 1 much more ... 5 much less than fair
 }
 # There is no "who earns more" item. Relative paid-work hours replace income share.

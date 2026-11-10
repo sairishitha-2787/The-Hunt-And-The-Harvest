@@ -88,10 +88,27 @@ The plan's working name was "say-only supporter." The data label is neutral beca
 | Education | `EDULEVEL` | ISCED simplified, 0–8 |
 | In paid work (self, partner) | `WORK`, `SPWORK` | 1 = currently in paid work |
 | Paid work hours (self, partner) | `WRKHRS`, `SPWRKHRS` | Not in paid work → **0 hours**, not missing |
-| Children at home | `HHTODD`, `HHCHILDR` | Below school age; school age to 17 |
+| Any child at home | `HHTODD`, `HHCHILDR`, `HOMPOP`, `HHADULT` | 1 if any child under 18 lives in the household; see below |
 | Own share judged fair | `v45` | Q19, 1 much more than fair … 5 much less |
 
+**Any child at home.** The two children items decide when they can (either above 0 → 1; both 0 → 0). Otherwise household size minus adults decides (above 0 → 1; 0 → 0; negative → missing). Where all four items exist, the two rules agree for 99.4% of partnered respondents. The fallback is needed because:
+- **NL** did not ask about children below school age (`HHTODD` = -1 for everyone);
+- **AU** never uses 0 on either children item: -9 means "no answer *and* no children", so true zeros and real non-answers share one code. -9 is therefore kept as missing, not recoded to 0, and household composition fills it where known.
+
+**Model features exclude** household-work hours (`v34`, `v36`), the task items (`v39`–`v44`), everything derived from them, and the fairness item (`v45`): they define or follow from the outcome. A test enforces this.
+
+**Missing features** are multiply imputed (`IterativeImputer`, posterior draws, m = 20; the imputation model includes the outcome, sex, country and all features, not the weights) and estimates pooled with Rubin's rules. Complete-case results are reported alongside as a sensitivity check.
+
 **There is no "who earns more" item**, so the plan's "woman's income share" is replaced by the couple's relative paid-work hours. Income variables are country-specific bands and are not used.
+
+**Countries** are effect-coded (sum to zero): each country's odds ratio compares it with the average country (unweighted average of country effects), not with one reference country. Other coefficients are unchanged by this choice.
+
+**Robustness:** the MI model is refitted once with the respondent's share of the couple's paid-work hours (own / (own + partner); 0.5 if both are 0) in place of the two absolute hour variables (`results/logit_odds_ratios_hours_share.csv`).
+
+## Limitations of the model
+
+- **Denmark's paid hours are mostly imputed.** 515 of 822 Danish supporters have no answer on their own paid-work hours. Under complete-case Denmark loses 69% of its rows; under MI its hours come largely from the imputation model, so Denmark's estimates lean on that model more than any other country's.
+- **The sex odds ratio reflects who reports, not only behaviour.** Men describe their own share of the housework and women describe their partner's, and the two come from different households. Session 2's perception gap shows men and women describe the split differently, so part of the gap between men and women supporters is a reporting difference. It should not be read as women being less egalitarian, or as men's households being more equal.
 
 ## What this does not measure
 
@@ -103,4 +120,8 @@ The plan's working name was "say-only supporter." The data label is neutral beca
 ## Changelog
 
 - Oct 23, 2026: definitions fixed before analysis.
+- Nov 9, 2026: children in the model become one item, "any child at home", because `HHTODD` was never asked in NL (738 supporters would otherwise drop). Built from the children items, with household size minus adults as fallback.
+- Nov 9, 2026: AU children items: -9 is **not** recoded to 0, since the codebook label is "no answer and no children" (both meanings in one code). Among AU supporters, 311 have -9 on both items; household composition sets 270 to no child and 5 to a child; 36 stay missing. A further 112 AU supporters with one item above 0 and the other -9 are now known to have a child.
+- Nov 9, 2026: complete-case would drop 21.3% of supporters (14.3% after the two fixes above), so model features are multiply imputed, with complete-case as a sensitivity check.
+- Nov 9, 2026: countries effect-coded (vs the average country) instead of dummy-coded against Austria, which lost 44% of its rows under complete-case and so distorted every country comparison there.
 - Nov 9, 2026: small-groups list completed with Philippine women (n=40) and Slovak women (n=47). The rule (fewer than 50 → flagged, not ranked) is unchanged; the list had named only the men's groups.
