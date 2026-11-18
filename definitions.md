@@ -129,6 +129,33 @@ The plan's working name was "say-only supporter." The data label is neutral beca
 - **Denmark's paid hours are mostly imputed.** 515 of 822 Danish supporters have no answer on their own paid-work hours. Under complete-case Denmark loses 69% of its rows; under MI its hours come largely from the imputation model, so Denmark's estimates lean on that model more than any other country's.
 - **The sex odds ratio reflects who reports, not only behaviour.** Men describe their own share of the housework and women describe their partner's, and the two come from different households. Session 2's perception gap shows men and women describe the split differently, so part of the gap between men and women supporters is a reporting difference. It should not be read as women being less egalitarian, or as men's households being more equal.
 
+## Household tool (Session 4)
+
+The tool in `app/` asks two partners, separately, who does each of the 6 ISSP tasks (same wording and order as above) plus 4 invisible-work items that are not in ISSP: remembering birthdays and buying gifts, noticing when supplies are running out, booking appointments, keeping track of schedules. Every item uses the ISSP response scale.
+
+**Positions.** Each answer is placed on one shared scale, from partner A's side:
+
+| Position | Meaning | A's answer | B's answer |
+|---|---|---|---|
+| 0 | Always A | Always me | Always my partner |
+| 1 | Usually A | Usually me | Usually my partner |
+| 2 | About equal | About equal or both together | About equal or both together |
+| 3 | Usually B | Usually my partner | Usually me |
+| 4 | Always B | Always my partner | Always me |
+| none | Third person | Done by a third person | Done by a third person |
+
+**Agreement**, from the difference between the two positions:
+
+| Difference | Label |
+|---|---|
+| 0 | agree |
+| 1 | slightly different |
+| 2 or more | disagree |
+
+**Third person.** Both partners say a third person does it → **agree**. Only one says so → **disagree**, since one partner says the couple doesn't do the task at all.
+
+**Country figures** (6 ISSP tasks only) come from `results/perception_gap.json` via `scripts/export_app_data.py`: the weighted % of partnered men and of partnered women saying the woman always or usually does the task, third-person answers excluded. They are hidden (null) under the same small-group rule as Session 2 (fewer than 50 respondents of either sex). If the couple says which partner is the woman, each answer is also shown as counting, or not, as "the woman does it" by that same measure. Men and women in the survey come from different households, and the tool says so next to the figures.
+
 ## What this does not measure
 
 - **Couples.** Each respondent reports alone. Men's and women's answers come from different households, so any comparison between them is at the country level only.
@@ -147,3 +174,4 @@ The plan's working name was "say-only supporter." The data label is neutral beca
 - Nov 10, 2026: exploratory "couple's paid hours" variable defined (cut-offs 0.4/0.6, sensitivity 0.45/0.55) before fitting; see "Exploratory". Not pre-registered.
 - Nov 10, 2026: exploratory couple's-hours model: own and partner work status dropped from the main version, because "neither works for pay" was unstable with them in (see "Exploratory"). The version with them is reported alongside.
 - Nov 10, 2026: hours-based check fixed as shared if the woman does 40–60% of the couple's housework hours (both ends inclusive). The band was set in the Session 3c instructions before any hours-based result was computed.
+- Nov 18, 2026: "Household tool" section added (positions, agreement rule, third-person rule, country figures). Changes no analysis result.

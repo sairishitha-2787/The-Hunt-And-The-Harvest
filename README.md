@@ -8,7 +8,7 @@ The *harvest* is the everyday work of feeding and running a home, the labour thi
 
 **Question:** among people who say they support women working, how many live in households where the housework is actually shared? Measured across 32 countries with ISSP 2022 survey data, plus a local-first tool that shows one household its own split.
 
-**Status:** 32 countries (ISSP 2022, ZA10000 v2.0.0). Analysis complete (Sessions 1-3); household tool (Session 4) not started.
+**Status:** 32 countries (ISSP 2022, ZA10000 v2.0.0). Analysis complete (Sessions 1–3). Household tool: questions, pass-the-phone and reveal built (Session 4a); planner and deploy next.
 
 ## Findings
 
@@ -54,7 +54,18 @@ Definitions: [definitions.md](definitions.md).
 ```
 pip install -e ".[dev]"
 pytest
+node --test "app/**/*.test.js"
 ```
+
+## Run the app locally
+
+The household tool in `app/` is plain HTML/CSS/JS with ES modules, which browsers won't run from a double-clicked file. Serve the folder instead:
+
+```
+python -m http.server -d app
+```
+
+then open http://localhost:8000. Answers stay in the page; refreshing clears them. To refresh the country figures after re-running the analysis: `python scripts/export_app_data.py`.
 
 ## Prior work
 

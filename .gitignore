@@ -1,5 +1,7 @@
 # ISSP microdata: GESIS terms of use don't allow redistribution. Never commit it.
 data/
+# Exception: the app's aggregate figures (from results/, no microdata).
+!app/data/
 *.dta
 *.sav
 *.zip

@@ -1,0 +1,1328 @@
+{
+ "description": "Per country and ISSP task: weighted % of partnered men and of partnered women saying the woman always or usually does it (third-person answers excluded). n is unweighted. Percentages are null where either sex has fewer than 50 respondents. Men and women come from different households: a comparison of reports, not of couples.",
+ "source": "ISSP 2022 ZA10000 v2.0.0",
+ "computed": "2026-10-23",
+ "min_group": 50,
+ "tasks": [
+  "laundry",
+  "plan_activities",
+  "care_sick",
+  "groceries",
+  "cleaning",
+  "meals"
+ ],
+ "countries": {
+  "AU": {
+   "name": "Australia",
+   "tasks": {
+    "laundry": {
+     "men_pct": 53.7,
+     "women_pct": 75.6,
+     "men_n": 294,
+     "women_n": 292
+    },
+    "plan_activities": {
+     "men_pct": 44.4,
+     "women_pct": 59.0,
+     "men_n": 290,
+     "women_n": 287
+    },
+    "care_sick": {
+     "men_pct": 43.9,
+     "women_pct": 64.6,
+     "men_n": 246,
+     "women_n": 255
+    },
+    "groceries": {
+     "men_pct": 40.3,
+     "women_pct": 56.7,
+     "men_n": 296,
+     "women_n": 293
+    },
+    "cleaning": {
+     "men_pct": 47.8,
+     "women_pct": 67.1,
+     "men_n": 281,
+     "women_n": 288
+    },
+    "meals": {
+     "men_pct": 49.0,
+     "women_pct": 63.6,
+     "men_n": 293,
+     "women_n": 292
+    }
+   }
+  },
+  "AT": {
+   "name": "Austria",
+   "tasks": {
+    "laundry": {
+     "men_pct": 73.6,
+     "women_pct": 85.0,
+     "men_n": 300,
+     "women_n": 368
+    },
+    "plan_activities": {
+     "men_pct": 27.2,
+     "women_pct": 54.0,
+     "men_n": 297,
+     "women_n": 367
+    },
+    "care_sick": {
+     "men_pct": 36.0,
+     "women_pct": 62.4,
+     "men_n": 238,
+     "women_n": 292
+    },
+    "groceries": {
+     "men_pct": 31.4,
+     "women_pct": 54.0,
+     "men_n": 302,
+     "women_n": 369
+    },
+    "cleaning": {
+     "men_pct": 46.7,
+     "women_pct": 71.2,
+     "men_n": 287,
+     "women_n": 353
+    },
+    "meals": {
+     "men_pct": 59.2,
+     "women_pct": 72.6,
+     "men_n": 302,
+     "women_n": 368
+    }
+   }
+  },
+  "BG": {
+   "name": "Bulgaria",
+   "tasks": {
+    "laundry": {
+     "men_pct": 92.3,
+     "women_pct": 94.2,
+     "men_n": 295,
+     "women_n": 362
+    },
+    "plan_activities": {
+     "men_pct": 29.4,
+     "women_pct": 38.3,
+     "men_n": 287,
+     "women_n": 364
+    },
+    "care_sick": {
+     "men_pct": 44.1,
+     "women_pct": 55.2,
+     "men_n": 235,
+     "women_n": 303
+    },
+    "groceries": {
+     "men_pct": 31.8,
+     "women_pct": 38.8,
+     "men_n": 295,
+     "women_n": 360
+    },
+    "cleaning": {
+     "men_pct": 84.3,
+     "women_pct": 82.1,
+     "men_n": 287,
+     "women_n": 358
+    },
+    "meals": {
+     "men_pct": 80.5,
+     "women_pct": 88.0,
+     "men_n": 284,
+     "women_n": 351
+    }
+   }
+  },
+  "HR": {
+   "name": "Croatia",
+   "tasks": {
+    "laundry": {
+     "men_pct": 79.5,
+     "women_pct": 85.1,
+     "men_n": 310,
+     "women_n": 473
+    },
+    "plan_activities": {
+     "men_pct": 34.8,
+     "women_pct": 49.3,
+     "men_n": 306,
+     "women_n": 470
+    },
+    "care_sick": {
+     "men_pct": 50.4,
+     "women_pct": 56.2,
+     "men_n": 261,
+     "women_n": 389
+    },
+    "groceries": {
+     "men_pct": 42.4,
+     "women_pct": 47.8,
+     "men_n": 310,
+     "women_n": 474
+    },
+    "cleaning": {
+     "men_pct": 67.5,
+     "women_pct": 76.7,
+     "men_n": 312,
+     "women_n": 473
+    },
+    "meals": {
+     "men_pct": 65.4,
+     "women_pct": 76.2,
+     "men_n": 309,
+     "women_n": 472
+    }
+   }
+  },
+  "CZ": {
+   "name": "Czechia",
+   "tasks": {
+    "laundry": {
+     "men_pct": 84.3,
+     "women_pct": 90.9,
+     "men_n": 286,
+     "women_n": 425
+    },
+    "plan_activities": {
+     "men_pct": 34.7,
+     "women_pct": 40.7,
+     "men_n": 288,
+     "women_n": 423
+    },
+    "care_sick": {
+     "men_pct": 51.0,
+     "women_pct": 63.8,
+     "men_n": 229,
+     "women_n": 308
+    },
+    "groceries": {
+     "men_pct": 32.8,
+     "women_pct": 51.9,
+     "men_n": 289,
+     "women_n": 425
+    },
+    "cleaning": {
+     "men_pct": 63.7,
+     "women_pct": 79.8,
+     "men_n": 290,
+     "women_n": 426
+    },
+    "meals": {
+     "men_pct": 68.5,
+     "women_pct": 71.2,
+     "men_n": 288,
+     "women_n": 426
+    }
+   }
+  },
+  "DK": {
+   "name": "Denmark",
+   "tasks": {
+    "laundry": {
+     "men_pct": 64.2,
+     "women_pct": 72.0,
+     "men_n": 454,
+     "women_n": 487
+    },
+    "plan_activities": {
+     "men_pct": 36.3,
+     "women_pct": 44.3,
+     "men_n": 450,
+     "women_n": 481
+    },
+    "care_sick": {
+     "men_pct": 30.2,
+     "women_pct": 46.4,
+     "men_n": 343,
+     "women_n": 384
+    },
+    "groceries": {
+     "men_pct": 34.0,
+     "women_pct": 36.0,
+     "men_n": 456,
+     "women_n": 486
+    },
+    "cleaning": {
+     "men_pct": 40.2,
+     "women_pct": 55.5,
+     "men_n": 439,
+     "women_n": 468
+    },
+    "meals": {
+     "men_pct": 44.2,
+     "women_pct": 50.0,
+     "men_n": 455,
+     "women_n": 485
+    }
+   }
+  },
+  "FI": {
+   "name": "Finland",
+   "tasks": {
+    "laundry": {
+     "men_pct": 59.9,
+     "women_pct": 67.8,
+     "men_n": 362,
+     "women_n": 446
+    },
+    "plan_activities": {
+     "men_pct": 33.6,
+     "women_pct": 53.6,
+     "men_n": 355,
+     "women_n": 439
+    },
+    "care_sick": {
+     "men_pct": 20.9,
+     "women_pct": 38.3,
+     "men_n": 332,
+     "women_n": 397
+    },
+    "groceries": {
+     "men_pct": 24.9,
+     "women_pct": 31.0,
+     "men_n": 363,
+     "women_n": 447
+    },
+    "cleaning": {
+     "men_pct": 39.1,
+     "women_pct": 55.7,
+     "men_n": 358,
+     "women_n": 440
+    },
+    "meals": {
+     "men_pct": 37.9,
+     "women_pct": 49.8,
+     "men_n": 360,
+     "women_n": 447
+    }
+   }
+  },
+  "FR": {
+   "name": "France",
+   "tasks": {
+    "laundry": {
+     "men_pct": 68.6,
+     "women_pct": 78.1,
+     "men_n": 652,
+     "women_n": 646
+    },
+    "plan_activities": {
+     "men_pct": 29.0,
+     "women_pct": 55.8,
+     "men_n": 624,
+     "women_n": 635
+    },
+    "care_sick": {
+     "men_pct": 30.4,
+     "women_pct": 58.2,
+     "men_n": 478,
+     "women_n": 499
+    },
+    "groceries": {
+     "men_pct": 29.9,
+     "women_pct": 47.4,
+     "men_n": 655,
+     "women_n": 647
+    },
+    "cleaning": {
+     "men_pct": 48.4,
+     "women_pct": 61.9,
+     "men_n": 603,
+     "women_n": 609
+    },
+    "meals": {
+     "men_pct": 49.1,
+     "women_pct": 59.8,
+     "men_n": 655,
+     "women_n": 646
+    }
+   }
+  },
+  "DE": {
+   "name": "Germany",
+   "tasks": {
+    "laundry": {
+     "men_pct": 73.4,
+     "women_pct": 77.8,
+     "men_n": 507,
+     "women_n": 497
+    },
+    "plan_activities": {
+     "men_pct": 32.8,
+     "women_pct": 48.8,
+     "men_n": 498,
+     "women_n": 486
+    },
+    "care_sick": {
+     "men_pct": 40.5,
+     "women_pct": 52.5,
+     "men_n": 383,
+     "women_n": 355
+    },
+    "groceries": {
+     "men_pct": 33.1,
+     "women_pct": 43.3,
+     "men_n": 504,
+     "women_n": 497
+    },
+    "cleaning": {
+     "men_pct": 48.1,
+     "women_pct": 63.5,
+     "men_n": 490,
+     "women_n": 471
+    },
+    "meals": {
+     "men_pct": 55.8,
+     "women_pct": 66.1,
+     "men_n": 507,
+     "women_n": 498
+    }
+   }
+  },
+  "GR": {
+   "name": "Greece",
+   "tasks": {
+    "laundry": {
+     "men_pct": 72.8,
+     "women_pct": 84.3,
+     "men_n": 494,
+     "women_n": 420
+    },
+    "plan_activities": {
+     "men_pct": 25.8,
+     "women_pct": 46.2,
+     "men_n": 506,
+     "women_n": 420
+    },
+    "care_sick": {
+     "men_pct": 31.1,
+     "women_pct": 49.3,
+     "men_n": 458,
+     "women_n": 394
+    },
+    "groceries": {
+     "men_pct": 25.1,
+     "women_pct": 39.9,
+     "men_n": 507,
+     "women_n": 426
+    },
+    "cleaning": {
+     "men_pct": 58.1,
+     "women_pct": 68.3,
+     "men_n": 467,
+     "women_n": 390
+    },
+    "meals": {
+     "men_pct": 64.8,
+     "women_pct": 71.0,
+     "men_n": 497,
+     "women_n": 418
+    }
+   }
+  },
+  "HU": {
+   "name": "Hungary",
+   "tasks": {
+    "laundry": {
+     "men_pct": 82.9,
+     "women_pct": 83.9,
+     "men_n": 246,
+     "women_n": 295
+    },
+    "plan_activities": {
+     "men_pct": 31.4,
+     "women_pct": 36.5,
+     "men_n": 246,
+     "women_n": 296
+    },
+    "care_sick": {
+     "men_pct": 58.6,
+     "women_pct": 65.5,
+     "men_n": 217,
+     "women_n": 278
+    },
+    "groceries": {
+     "men_pct": 46.3,
+     "women_pct": 45.9,
+     "men_n": 246,
+     "women_n": 299
+    },
+    "cleaning": {
+     "men_pct": 74.5,
+     "women_pct": 69.2,
+     "men_n": 244,
+     "women_n": 298
+    },
+    "meals": {
+     "men_pct": 75.5,
+     "women_pct": 72.4,
+     "men_n": 244,
+     "women_n": 296
+    }
+   }
+  },
+  "IS": {
+   "name": "Iceland",
+   "tasks": {
+    "laundry": {
+     "men_pct": 63.2,
+     "women_pct": 69.5,
+     "men_n": 400,
+     "women_n": 479
+    },
+    "plan_activities": {
+     "men_pct": 34.5,
+     "women_pct": 50.2,
+     "men_n": 391,
+     "women_n": 464
+    },
+    "care_sick": {
+     "men_pct": 28.8,
+     "women_pct": 43.0,
+     "men_n": 351,
+     "women_n": 414
+    },
+    "groceries": {
+     "men_pct": 25.6,
+     "women_pct": 42.8,
+     "men_n": 399,
+     "women_n": 477
+    },
+    "cleaning": {
+     "men_pct": 40.8,
+     "women_pct": 53.4,
+     "men_n": 385,
+     "women_n": 464
+    },
+    "meals": {
+     "men_pct": 40.5,
+     "women_pct": 51.5,
+     "men_n": 398,
+     "women_n": 478
+    }
+   }
+  },
+  "IN": {
+   "name": "India",
+   "tasks": {
+    "laundry": {
+     "men_pct": 53.2,
+     "women_pct": 71.0,
+     "men_n": 522,
+     "women_n": 455
+    },
+    "plan_activities": {
+     "men_pct": 19.6,
+     "women_pct": 35.6,
+     "men_n": 551,
+     "women_n": 467
+    },
+    "care_sick": {
+     "men_pct": 30.5,
+     "women_pct": 47.2,
+     "men_n": 541,
+     "women_n": 457
+    },
+    "groceries": {
+     "men_pct": 27.2,
+     "women_pct": 39.9,
+     "men_n": 537,
+     "women_n": 466
+    },
+    "cleaning": {
+     "men_pct": 55.0,
+     "women_pct": 67.8,
+     "men_n": 516,
+     "women_n": 461
+    },
+    "meals": {
+     "men_pct": 47.8,
+     "women_pct": 73.8,
+     "men_n": 533,
+     "women_n": 463
+    }
+   }
+  },
+  "IL": {
+   "name": "Israel",
+   "tasks": {
+    "laundry": {
+     "men_pct": 69.0,
+     "women_pct": 79.7,
+     "men_n": 404,
+     "women_n": 421
+    },
+    "plan_activities": {
+     "men_pct": 34.0,
+     "women_pct": 60.8,
+     "men_n": 403,
+     "women_n": 414
+    },
+    "care_sick": {
+     "men_pct": 26.5,
+     "women_pct": 59.3,
+     "men_n": 389,
+     "women_n": 398
+    },
+    "groceries": {
+     "men_pct": 18.8,
+     "women_pct": 36.2,
+     "men_n": 406,
+     "women_n": 420
+    },
+    "cleaning": {
+     "men_pct": 52.6,
+     "women_pct": 68.5,
+     "men_n": 368,
+     "women_n": 396
+    },
+    "meals": {
+     "men_pct": 58.3,
+     "women_pct": 67.0,
+     "men_n": 401,
+     "women_n": 421
+    }
+   }
+  },
+  "IT": {
+   "name": "Italy",
+   "tasks": {
+    "laundry": {
+     "men_pct": 87.3,
+     "women_pct": 83.9,
+     "men_n": 331,
+     "women_n": 322
+    },
+    "plan_activities": {
+     "men_pct": 30.6,
+     "women_pct": 34.2,
+     "men_n": 337,
+     "women_n": 328
+    },
+    "care_sick": {
+     "men_pct": 48.0,
+     "women_pct": 50.0,
+     "men_n": 256,
+     "women_n": 262
+    },
+    "groceries": {
+     "men_pct": 40.6,
+     "women_pct": 45.6,
+     "men_n": 337,
+     "women_n": 327
+    },
+    "cleaning": {
+     "men_pct": 77.0,
+     "women_pct": 76.7,
+     "men_n": 321,
+     "women_n": 309
+    },
+    "meals": {
+     "men_pct": 72.4,
+     "women_pct": 78.5,
+     "men_n": 337,
+     "women_n": 326
+    }
+   }
+  },
+  "JP": {
+   "name": "Japan",
+   "tasks": {
+    "laundry": {
+     "men_pct": 79.3,
+     "women_pct": 79.7,
+     "men_n": 420,
+     "women_n": 418
+    },
+    "plan_activities": {
+     "men_pct": 24.4,
+     "women_pct": 45.7,
+     "men_n": 405,
+     "women_n": 405
+    },
+    "care_sick": {
+     "men_pct": 58.9,
+     "women_pct": 71.2,
+     "men_n": 399,
+     "women_n": 407
+    },
+    "groceries": {
+     "men_pct": 60.1,
+     "women_pct": 68.1,
+     "men_n": 424,
+     "women_n": 417
+    },
+    "cleaning": {
+     "men_pct": 70.0,
+     "women_pct": 73.4,
+     "men_n": 423,
+     "women_n": 418
+    },
+    "meals": {
+     "men_pct": 84.7,
+     "women_pct": 87.7,
+     "men_n": 419,
+     "women_n": 416
+    }
+   }
+  },
+  "LT": {
+   "name": "Lithuania",
+   "tasks": {
+    "laundry": {
+     "men_pct": 80.1,
+     "women_pct": 85.1,
+     "men_n": 257,
+     "women_n": 368
+    },
+    "plan_activities": {
+     "men_pct": 31.0,
+     "women_pct": 42.6,
+     "men_n": 256,
+     "women_n": 359
+    },
+    "care_sick": {
+     "men_pct": 49.7,
+     "women_pct": 59.2,
+     "men_n": 214,
+     "women_n": 299
+    },
+    "groceries": {
+     "men_pct": 30.3,
+     "women_pct": 40.1,
+     "men_n": 258,
+     "women_n": 361
+    },
+    "cleaning": {
+     "men_pct": 71.3,
+     "women_pct": 74.9,
+     "men_n": 258,
+     "women_n": 363
+    },
+    "meals": {
+     "men_pct": 72.6,
+     "women_pct": 73.3,
+     "men_n": 257,
+     "women_n": 364
+    }
+   }
+  },
+  "NL": {
+   "name": "Netherlands",
+   "tasks": {
+    "laundry": {
+     "men_pct": 69.3,
+     "women_pct": 81.6,
+     "men_n": 467,
+     "women_n": 481
+    },
+    "plan_activities": {
+     "men_pct": 31.4,
+     "women_pct": 53.2,
+     "men_n": 463,
+     "women_n": 479
+    },
+    "care_sick": {
+     "men_pct": 32.1,
+     "women_pct": 53.1,
+     "men_n": 413,
+     "women_n": 423
+    },
+    "groceries": {
+     "men_pct": 32.5,
+     "women_pct": 51.5,
+     "men_n": 469,
+     "women_n": 481
+    },
+    "cleaning": {
+     "men_pct": 46.6,
+     "women_pct": 65.4,
+     "men_n": 454,
+     "women_n": 458
+    },
+    "meals": {
+     "men_pct": 49.2,
+     "women_pct": 57.4,
+     "men_n": 470,
+     "women_n": 480
+    }
+   }
+  },
+  "NZ": {
+   "name": "New Zealand",
+   "tasks": {
+    "laundry": {
+     "men_pct": 55.4,
+     "women_pct": 73.0,
+     "men_n": 329,
+     "women_n": 347
+    },
+    "plan_activities": {
+     "men_pct": 43.1,
+     "women_pct": 58.4,
+     "men_n": 326,
+     "women_n": 337
+    },
+    "care_sick": {
+     "men_pct": 44.5,
+     "women_pct": 62.0,
+     "men_n": 291,
+     "women_n": 306
+    },
+    "groceries": {
+     "men_pct": 38.6,
+     "women_pct": 61.1,
+     "men_n": 329,
+     "women_n": 343
+    },
+    "cleaning": {
+     "men_pct": 42.5,
+     "women_pct": 68.4,
+     "men_n": 318,
+     "women_n": 338
+    },
+    "meals": {
+     "men_pct": 55.2,
+     "women_pct": 60.4,
+     "men_n": 327,
+     "women_n": 344
+    }
+   }
+  },
+  "NO": {
+   "name": "Norway",
+   "tasks": {
+    "laundry": {
+     "men_pct": 65.0,
+     "women_pct": 74.3,
+     "men_n": 389,
+     "women_n": 443
+    },
+    "plan_activities": {
+     "men_pct": 35.0,
+     "women_pct": 57.7,
+     "men_n": 363,
+     "women_n": 430
+    },
+    "care_sick": {
+     "men_pct": 23.2,
+     "women_pct": 42.7,
+     "men_n": 314,
+     "women_n": 349
+    },
+    "groceries": {
+     "men_pct": 23.1,
+     "women_pct": 36.4,
+     "men_n": 376,
+     "women_n": 439
+    },
+    "cleaning": {
+     "men_pct": 41.3,
+     "women_pct": 54.4,
+     "men_n": 373,
+     "women_n": 428
+    },
+    "meals": {
+     "men_pct": 38.7,
+     "women_pct": 48.6,
+     "men_n": 382,
+     "women_n": 442
+    }
+   }
+  },
+  "PH": {
+   "name": "Philippines",
+   "tasks": {
+    "laundry": {
+     "men_pct": 65.1,
+     "women_pct": 84.4,
+     "men_n": 468,
+     "women_n": 468
+    },
+    "plan_activities": {
+     "men_pct": 36.2,
+     "women_pct": 42.6,
+     "men_n": 469,
+     "women_n": 472
+    },
+    "care_sick": {
+     "men_pct": 45.2,
+     "women_pct": 59.2,
+     "men_n": 452,
+     "women_n": 463
+    },
+    "groceries": {
+     "men_pct": 50.9,
+     "women_pct": 62.5,
+     "men_n": 476,
+     "women_n": 479
+    },
+    "cleaning": {
+     "men_pct": 51.8,
+     "women_pct": 77.0,
+     "men_n": 476,
+     "women_n": 479
+    },
+    "meals": {
+     "men_pct": 44.2,
+     "women_pct": 66.5,
+     "men_n": 476,
+     "women_n": 481
+    }
+   }
+  },
+  "PL": {
+   "name": "Poland",
+   "tasks": {
+    "laundry": {
+     "men_pct": 80.2,
+     "women_pct": 82.9,
+     "men_n": 344,
+     "women_n": 356
+    },
+    "plan_activities": {
+     "men_pct": 26.6,
+     "women_pct": 32.1,
+     "men_n": 341,
+     "women_n": 357
+    },
+    "care_sick": {
+     "men_pct": 36.3,
+     "women_pct": 52.2,
+     "men_n": 227,
+     "women_n": 258
+    },
+    "groceries": {
+     "men_pct": 34.9,
+     "women_pct": 37.7,
+     "men_n": 338,
+     "women_n": 353
+    },
+    "cleaning": {
+     "men_pct": 59.5,
+     "women_pct": 62.2,
+     "men_n": 338,
+     "women_n": 356
+    },
+    "meals": {
+     "men_pct": 68.9,
+     "women_pct": 66.7,
+     "men_n": 342,
+     "women_n": 356
+    }
+   }
+  },
+  "RU": {
+   "name": "Russia",
+   "tasks": {
+    "laundry": {
+     "men_pct": 74.6,
+     "women_pct": 81.8,
+     "men_n": 375,
+     "women_n": 399
+    },
+    "plan_activities": {
+     "men_pct": 34.1,
+     "women_pct": 49.1,
+     "men_n": 374,
+     "women_n": 400
+    },
+    "care_sick": {
+     "men_pct": 42.9,
+     "women_pct": 59.1,
+     "men_n": 276,
+     "women_n": 295
+    },
+    "groceries": {
+     "men_pct": 25.9,
+     "women_pct": 36.2,
+     "men_n": 383,
+     "women_n": 405
+    },
+    "cleaning": {
+     "men_pct": 59.4,
+     "women_pct": 73.0,
+     "men_n": 380,
+     "women_n": 403
+    },
+    "meals": {
+     "men_pct": 65.9,
+     "women_pct": 69.9,
+     "men_n": 379,
+     "women_n": 403
+    }
+   }
+  },
+  "SK": {
+   "name": "Slovakia",
+   "tasks": {
+    "laundry": {
+     "men_pct": 90.7,
+     "women_pct": 91.0,
+     "men_n": 250,
+     "women_n": 219
+    },
+    "plan_activities": {
+     "men_pct": 36.9,
+     "women_pct": 28.2,
+     "men_n": 249,
+     "women_n": 219
+    },
+    "care_sick": {
+     "men_pct": 62.4,
+     "women_pct": 55.4,
+     "men_n": 219,
+     "women_n": 191
+    },
+    "groceries": {
+     "men_pct": 49.0,
+     "women_pct": 41.5,
+     "men_n": 252,
+     "women_n": 217
+    },
+    "cleaning": {
+     "men_pct": 79.8,
+     "women_pct": 78.0,
+     "men_n": 249,
+     "women_n": 219
+    },
+    "meals": {
+     "men_pct": 82.7,
+     "women_pct": 80.0,
+     "men_n": 252,
+     "women_n": 218
+    }
+   }
+  },
+  "SI": {
+   "name": "Slovenia",
+   "tasks": {
+    "laundry": {
+     "men_pct": 79.0,
+     "women_pct": 87.3,
+     "men_n": 290,
+     "women_n": 347
+    },
+    "plan_activities": {
+     "men_pct": 30.8,
+     "women_pct": 35.1,
+     "men_n": 289,
+     "women_n": 345
+    },
+    "care_sick": {
+     "men_pct": 33.6,
+     "women_pct": 48.3,
+     "men_n": 259,
+     "women_n": 302
+    },
+    "groceries": {
+     "men_pct": 31.0,
+     "women_pct": 40.9,
+     "men_n": 290,
+     "women_n": 347
+    },
+    "cleaning": {
+     "men_pct": 56.7,
+     "women_pct": 68.2,
+     "men_n": 291,
+     "women_n": 346
+    },
+    "meals": {
+     "men_pct": 59.5,
+     "women_pct": 69.4,
+     "men_n": 291,
+     "women_n": 346
+    }
+   }
+  },
+  "ZA": {
+   "name": "South Africa",
+   "tasks": {
+    "laundry": {
+     "men_pct": 51.8,
+     "women_pct": 84.0,
+     "men_n": 369,
+     "women_n": 475
+    },
+    "plan_activities": {
+     "men_pct": 36.2,
+     "women_pct": 54.2,
+     "men_n": 402,
+     "women_n": 505
+    },
+    "care_sick": {
+     "men_pct": 41.9,
+     "women_pct": 62.2,
+     "men_n": 371,
+     "women_n": 477
+    },
+    "groceries": {
+     "men_pct": 39.0,
+     "women_pct": 61.7,
+     "men_n": 408,
+     "women_n": 513
+    },
+    "cleaning": {
+     "men_pct": 45.2,
+     "women_pct": 76.8,
+     "men_n": 362,
+     "women_n": 467
+    },
+    "meals": {
+     "men_pct": 54.6,
+     "women_pct": 79.0,
+     "men_n": 411,
+     "women_n": 506
+    }
+   }
+  },
+  "ES": {
+   "name": "Spain",
+   "tasks": {
+    "laundry": {
+     "men_pct": 56.1,
+     "women_pct": 71.9,
+     "men_n": 521,
+     "women_n": 539
+    },
+    "plan_activities": {
+     "men_pct": 18.9,
+     "women_pct": 42.9,
+     "men_n": 525,
+     "women_n": 547
+    },
+    "care_sick": {
+     "men_pct": 16.6,
+     "women_pct": 43.5,
+     "men_n": 487,
+     "women_n": 513
+    },
+    "groceries": {
+     "men_pct": 17.8,
+     "women_pct": 35.1,
+     "men_n": 526,
+     "women_n": 547
+    },
+    "cleaning": {
+     "men_pct": 41.8,
+     "women_pct": 63.1,
+     "men_n": 484,
+     "women_n": 510
+    },
+    "meals": {
+     "men_pct": 43.7,
+     "women_pct": 62.9,
+     "men_n": 523,
+     "women_n": 545
+    }
+   }
+  },
+  "SE": {
+   "name": "Sweden",
+   "tasks": {
+    "laundry": {
+     "men_pct": 56.7,
+     "women_pct": 69.5,
+     "men_n": 497,
+     "women_n": 557
+    },
+    "plan_activities": {
+     "men_pct": 44.4,
+     "women_pct": 57.2,
+     "men_n": 493,
+     "women_n": 544
+    },
+    "care_sick": {
+     "men_pct": 23.5,
+     "women_pct": 40.4,
+     "men_n": 395,
+     "women_n": 438
+    },
+    "groceries": {
+     "men_pct": 23.2,
+     "women_pct": 34.8,
+     "men_n": 495,
+     "women_n": 555
+    },
+    "cleaning": {
+     "men_pct": 37.9,
+     "women_pct": 49.9,
+     "men_n": 483,
+     "women_n": 537
+    },
+    "meals": {
+     "men_pct": 41.2,
+     "women_pct": 47.7,
+     "men_n": 495,
+     "women_n": 556
+    }
+   }
+  },
+  "CH": {
+   "name": "Switzerland",
+   "tasks": {
+    "laundry": {
+     "men_pct": 68.1,
+     "women_pct": 76.1,
+     "men_n": 856,
+     "women_n": 844
+    },
+    "plan_activities": {
+     "men_pct": 32.1,
+     "women_pct": 52.6,
+     "men_n": 848,
+     "women_n": 841
+    },
+    "care_sick": {
+     "men_pct": 36.3,
+     "women_pct": 56.6,
+     "men_n": 694,
+     "women_n": 693
+    },
+    "groceries": {
+     "men_pct": 32.4,
+     "women_pct": 46.4,
+     "men_n": 860,
+     "women_n": 843
+    },
+    "cleaning": {
+     "men_pct": 50.6,
+     "women_pct": 63.1,
+     "men_n": 774,
+     "women_n": 765
+    },
+    "meals": {
+     "men_pct": 50.2,
+     "women_pct": 62.0,
+     "men_n": 861,
+     "women_n": 844
+    }
+   }
+  },
+  "TW": {
+   "name": "Taiwan",
+   "tasks": {
+    "laundry": {
+     "men_pct": 57.3,
+     "women_pct": 66.1,
+     "men_n": 391,
+     "women_n": 482
+    },
+    "plan_activities": {
+     "men_pct": 31.3,
+     "women_pct": 36.5,
+     "men_n": 382,
+     "women_n": 465
+    },
+    "care_sick": {
+     "men_pct": 25.2,
+     "women_pct": 46.8,
+     "men_n": 176,
+     "women_n": 199
+    },
+    "groceries": {
+     "men_pct": 37.8,
+     "women_pct": 51.8,
+     "men_n": 389,
+     "women_n": 480
+    },
+    "cleaning": {
+     "men_pct": 47.1,
+     "women_pct": 58.3,
+     "men_n": 388,
+     "women_n": 481
+    },
+    "meals": {
+     "men_pct": 69.7,
+     "women_pct": 76.4,
+     "men_n": 374,
+     "women_n": 460
+    }
+   }
+  },
+  "TH": {
+   "name": "Thailand",
+   "tasks": {
+    "laundry": {
+     "men_pct": 62.4,
+     "women_pct": 72.8,
+     "men_n": 423,
+     "women_n": 441
+    },
+    "plan_activities": {
+     "men_pct": 29.6,
+     "women_pct": 36.4,
+     "men_n": 425,
+     "women_n": 445
+    },
+    "care_sick": {
+     "men_pct": 36.5,
+     "women_pct": 43.7,
+     "men_n": 384,
+     "women_n": 396
+    },
+    "groceries": {
+     "men_pct": 61.4,
+     "women_pct": 68.9,
+     "men_n": 417,
+     "women_n": 441
+    },
+    "cleaning": {
+     "men_pct": 59.6,
+     "women_pct": 71.7,
+     "men_n": 421,
+     "women_n": 442
+    },
+    "meals": {
+     "men_pct": 56.8,
+     "women_pct": 72.0,
+     "men_n": 421,
+     "women_n": 436
+    }
+   }
+  },
+  "US": {
+   "name": "United States",
+   "tasks": {
+    "laundry": {
+     "men_pct": 49.5,
+     "women_pct": 55.7,
+     "men_n": 266,
+     "women_n": 227
+    },
+    "plan_activities": {
+     "men_pct": 40.8,
+     "women_pct": 71.2,
+     "men_n": 264,
+     "women_n": 226
+    },
+    "care_sick": {
+     "men_pct": 35.8,
+     "women_pct": 64.0,
+     "men_n": 245,
+     "women_n": 204
+    },
+    "groceries": {
+     "men_pct": 41.6,
+     "women_pct": 50.9,
+     "men_n": 269,
+     "women_n": 226
+    },
+    "cleaning": {
+     "men_pct": 45.9,
+     "women_pct": 52.7,
+     "men_n": 249,
+     "women_n": 215
+    },
+    "meals": {
+     "men_pct": 50.8,
+     "women_pct": 58.5,
+     "men_n": 269,
+     "women_n": 226
+    }
+   }
+  }
+ }
+}
